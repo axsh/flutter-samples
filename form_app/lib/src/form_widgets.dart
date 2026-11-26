@@ -24,7 +24,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Form widgets')),
+      appBar: AppBar(title: const Text('フォームウィジェット')),
       body: Form(
         key: _formKey,
         child: Scrollbar(
@@ -43,8 +43,8 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                         TextFormField(
                           decoration: const InputDecoration(
                             filled: true,
-                            hintText: 'Enter a title...',
-                            labelText: 'Title',
+                            hintText: 'タイトルを入力してください...',
+                            labelText: 'タイトル',
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -56,8 +56,8 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             filled: true,
-                            hintText: 'Enter a description...',
-                            labelText: 'Description',
+                            hintText: '説明を入力してください...',
+                            labelText: '説明',
                           ),
                           onChanged: (value) {
                             description = value;
@@ -123,7 +123,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                               },
                             ),
                             Text(
-                              'Brushed Teeth',
+                              '歯をみがいた',
                               style: Theme.of(
                                 context,
                               ).textTheme.titleMedium,
@@ -135,7 +135,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Enable feature',
+                              '機能を有効にする',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             Switch(
@@ -184,7 +184,7 @@ class _FormDatePickerState extends State<_FormDatePicker> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Date', style: Theme.of(context).textTheme.bodyLarge),
+            Text('日付', style: Theme.of(context).textTheme.bodyLarge),
             Text(
               intl.DateFormat.yMd().format(widget.date),
               style: Theme.of(context).textTheme.titleMedium,
@@ -192,7 +192,7 @@ class _FormDatePickerState extends State<_FormDatePicker> {
           ],
         ),
         TextButton(
-          child: const Text('Edit'),
+          child: const Text('編集'),
           onPressed: () async {
             var newDate = await showDatePicker(
               context: context,

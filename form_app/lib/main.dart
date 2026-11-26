@@ -18,7 +18,7 @@ void main() {
 
 final demos = [
   Demo(
-    name: 'Sign in with HTTP',
+    name: 'HTTPでサインイン',
     route: 'signin_http',
     builder: (context) => SignInHttpDemo(
       // This sample uses a mock HTTP client.
@@ -26,17 +26,17 @@ final demos = [
     ),
   ),
   Demo(
-    name: 'Autofill',
+    name: 'オートフィル',
     route: 'autofill',
     builder: (context) => const AutofillDemo(),
   ),
   Demo(
-    name: 'Form widgets',
+    name: 'フォームウィジェット',
     route: 'form_widgets',
     builder: (context) => const FormWidgetsDemo(),
   ),
   Demo(
-    name: 'Validation',
+    name: 'バリデーション',
     route: 'validation',
     builder: (context) => const FormValidationDemo(),
   ),
@@ -64,7 +64,7 @@ class FormApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Form Samples',
+      title: 'フォームサンプル',
       theme: ThemeData(colorSchemeSeed: Colors.teal),
       routerConfig: router,
     );
@@ -77,7 +77,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Form Samples')),
+      appBar: AppBar(title: const Text('フォームサンプル')),
       body: ListView(children: [...demos.map((d) => DemoTile(demo: d))]),
     );
   }

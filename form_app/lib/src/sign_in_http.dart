@@ -38,7 +38,7 @@ class _SignInHttpDemoState extends State<SignInHttpDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in Form')),
+      appBar: AppBar(title: const Text('サインインフォーム')),
       body: Form(
         child: Scrollbar(
           child: SingleChildScrollView(
@@ -51,8 +51,8 @@ class _SignInHttpDemoState extends State<SignInHttpDemo> {
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       filled: true,
-                      hintText: 'Your email address',
-                      labelText: 'Email',
+                      hintText: 'メールアドレスを入力',
+                      labelText: 'メール',
                     ),
                     onChanged: (value) {
                       formData.email = value;
@@ -61,7 +61,7 @@ class _SignInHttpDemoState extends State<SignInHttpDemo> {
                   TextFormField(
                     decoration: const InputDecoration(
                       filled: true,
-                      labelText: 'Password',
+                      labelText: 'パスワード',
                     ),
                     obscureText: true,
                     onChanged: (value) {
@@ -69,7 +69,7 @@ class _SignInHttpDemoState extends State<SignInHttpDemo> {
                     },
                   ),
                   TextButton(
-                    child: const Text('Sign in'),
+                    child: const Text('サインイン'),
                     onPressed: () async {
                       // Use a JSON encoded string to send
                       var result = await widget.httpClient!.post(
@@ -79,9 +79,9 @@ class _SignInHttpDemoState extends State<SignInHttpDemo> {
                       );
 
                       _showDialog(switch (result.statusCode) {
-                        200 => 'Successfully signed in.',
-                        401 => 'Unable to sign in.',
-                        _ => 'Something went wrong. Please try again.',
+                        200 => 'サインインに成功しました。',
+                        401 => 'サインインできません。',
+                        _ => 'エラーが発生しました。もう一度試してください。',
                       });
                     },
                   ),

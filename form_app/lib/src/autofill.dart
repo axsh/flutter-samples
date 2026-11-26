@@ -19,7 +19,7 @@ class _AutofillDemoState extends State<AutofillDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Autofill')),
+      appBar: AppBar(title: const Text('オートフィル')),
       body: Form(
         key: _formKey,
         child: Scrollbar(
@@ -29,21 +29,21 @@ class _AutofillDemoState extends State<AutofillDemo> {
               child: Column(
                 children: [
                   ...[
-                    const Text('This sample demonstrates autofill. '),
+                    const Text('このサンプルはオートフィルのデモンストレーションです。'),
                     TextFormField(
                       autofocus: true,
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
-                        hintText: 'Jane',
-                        labelText: 'First Name',
+                        hintText: '太郎',
+                        labelText: '名',
                       ),
                       autofillHints: const [AutofillHints.givenName],
                     ),
                     TextFormField(
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
-                        hintText: 'Doe',
-                        labelText: 'Last Name',
+                        hintText: '山田',
+                        labelText: '姓',
                       ),
                       autofillHints: const [AutofillHints.familyName],
                     ),
@@ -51,8 +51,8 @@ class _AutofillDemoState extends State<AutofillDemo> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        hintText: 'foo@example.com',
-                        labelText: 'Email',
+                        hintText: 'taro@example.com',
+                        labelText: 'メール',
                       ),
                       autofillHints: [AutofillHints.email],
                     ),
@@ -60,8 +60,8 @@ class _AutofillDemoState extends State<AutofillDemo> {
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        hintText: '(123) 456-7890',
-                        labelText: 'Telephone',
+                        hintText: '090-1234-5678',
+                        labelText: '電話番号',
                       ),
                       autofillHints: [AutofillHints.telephoneNumber],
                     ),
@@ -69,8 +69,8 @@ class _AutofillDemoState extends State<AutofillDemo> {
                       keyboardType: TextInputType.streetAddress,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        hintText: '123 4th Ave',
-                        labelText: 'Street Address',
+                        hintText: '東京都渋谷区1-2-3',
+                        labelText: '住所',
                       ),
                       autofillHints: [AutofillHints.streetAddressLine1],
                     ),
@@ -78,24 +78,24 @@ class _AutofillDemoState extends State<AutofillDemo> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        hintText: '12345',
-                        labelText: 'Postal Code',
+                        hintText: '150-0001',
+                        labelText: '郵便番号',
                       ),
                       autofillHints: [AutofillHints.postalCode],
                     ),
                     const TextField(
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        hintText: 'United States',
-                        labelText: 'Country',
+                        hintText: '日本',
+                        labelText: '国',
                       ),
                       autofillHints: [AutofillHints.countryName],
                     ),
                     const TextField(
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: '1',
-                        labelText: 'Country Code',
+                        hintText: '81',
+                        labelText: '国番号',
                       ),
                       autofillHints: [AutofillHints.countryCode],
                     ),

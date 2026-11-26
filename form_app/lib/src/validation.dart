@@ -22,12 +22,12 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📖 Story Generator'),
+        title: const Text('📖 ストーリージェネレーター'),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8),
             child: TextButton(
-              child: const Text('Submit'),
+              child: const Text('送信'),
               onPressed: () {
                 // Validate the form by getting the FormState from the GlobalKey
                 // and calling validate() on it.
@@ -39,11 +39,11 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                 showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Your story'),
-                    content: Text('The $adjective developer saw a $noun'),
+                    title: const Text('あなたのストーリー'),
+                    content: Text('$adjectiveな開発者が$nounを見た'),
                     actions: [
                       TextButton(
-                        child: const Text('Done'),
+                        child: const Text('完了'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -69,17 +69,17 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter an adjective.';
+                      return '形容詞を入力してください。';
                     }
                     if (english_words.adjectives.contains(value)) {
                       return null;
                     }
-                    return 'Not a valid adjective.';
+                    return '有効な形容詞ではありません。';
                   },
                   decoration: const InputDecoration(
                     filled: true,
-                    hintText: 'e.g. quick, beautiful, interesting',
-                    labelText: 'Enter an adjective',
+                    hintText: '例: quick、beautiful、interesting',
+                    labelText: '形容詞を入力',
                   ),
                   onChanged: (value) {
                     adjective = value;
@@ -90,17 +90,17 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                 TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter a noun.';
+                      return '名詞を入力してください。';
                     }
                     if (english_words.nouns.contains(value)) {
                       return null;
                     }
-                    return 'Not a valid noun.';
+                    return '有効な名詞ではありません。';
                   },
                   decoration: const InputDecoration(
                     filled: true,
-                    hintText: 'i.e. a person, place or thing',
-                    labelText: 'Enter a noun',
+                    hintText: '例: 人、場所、物',
+                    labelText: '名詞を入力',
                   ),
                   onChanged: (value) {
                     noun = value;
@@ -113,7 +113,7 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                   initialValue: false,
                   validator: (value) {
                     if (value == false) {
-                      return 'You must agree to the terms of service.';
+                      return 'サービス利用規約に同意する必要があります。';
                     }
                     return null;
                   },
@@ -136,7 +136,7 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                               },
                             ),
                             Text(
-                              'I agree to the terms of service.',
+                              '利用規約に同意します。',
                               style: Theme.of(
                                 context,
                               ).textTheme.titleMedium,
@@ -144,15 +144,16 @@ class _FormValidationDemoState extends State<FormValidationDemo> {
                           ],
                         ),
                         if (!formFieldState.isValid)
-                          Text(
-                            formFieldState.errorText ?? "",
-                            style: Theme.of(context).textTheme.bodySmall!
-                                .copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.error,
-                                ),
-                          ),
+                          if (formFieldState.errorText != null)
+                            Text(
+                              'サービス利用規約に同意する必要があります。',
+                              style: Theme.of(context).textTheme.bodySmall!
+                                  .copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
+                                  ),
+                            ),
                       ],
                     );
                   },
