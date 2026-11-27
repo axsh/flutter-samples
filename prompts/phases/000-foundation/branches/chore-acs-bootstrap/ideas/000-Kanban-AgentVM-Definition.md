@@ -120,10 +120,11 @@ Pin 層では `warmup/10-pub-get.sh` が `form_app` で `flutter pub get` を流
 
 ### 調査で分かった問題
 
-1. **`form_app` の Android 構成が古い（定義の外の問題）**
+1. **`form_app` の Android 構成が古い（定義の外の問題 → 仕様 001 で先に直す）**
    `form_app/android` は Gradle 7.5・AGP 7.3.0・Kotlin 1.7.10 の Groovy DSL で、Flutter 3.50.1 の最小版をすべて下回る。Flutter のソースを読む限り、`flutter run` や `flutter build apk` はこの検査で例外終了する（実行しての確認はしていない）。上流は Android の CI を `if: false` で止めており（`.github/workflows/build-android.yml`）、ほかのサンプルも最新で AGP 8.9.1・Gradle 8.12（`cupertino_gallery`）と、最小版を満たさない。
    Kanban のカード 3 件（`origin/card/card-5a6b714a…`、`card-5da6a2b0…`、`card-d1c5cae7…`）は、どれも `form_app/android` を新しいテンプレートで作り直していた（Gradle 9.5.0 への更新と、`gradle.properties` に「Flutter template が足した」と注記された行がある）。ただし、カードの自動コミットに入っているのは Groovy の build ファイルの削除と既存ファイルの変更だけで、新しいテンプレートが作るはずの `.kts` ファイルは入っていない。このため、カードのブランチの Android 構成は欠けた状態で残っている。自動コミットが未追跡ファイルを含めないためと推定する（Kanban 側の問題で、本仕様では扱わない）。
-   イメージの bake は `flutter pub get` までなので、この問題では止まらない。一方、Flutter dev supervisor は `form_app` で `flutter run --machine -d emulator-5554 --debug` を実行するので、Viewer の Hot Reload・Hot Restart・Rebuild は失敗する見込みである。扱いは `backlog:9710627d-5ac1-4ac1-b800-9a52889b1df0` で決める。
+   イメージの bake は `flutter pub get` までなので、この問題では止まらない。一方、Flutter dev supervisor は `form_app` で `flutter run --machine -d emulator-5554 --debug` を実行するので、Viewer の Hot Reload・Hot Restart・Rebuild は失敗する見込みである。
+   **決定（`backlog:9710627d-5ac1-4ac1-b800-9a52889b1df0` 決着）**: 別仕様 [001-FormApp-Android-Gradle-Upgrade.md](prompts/phases/000-foundation/branches/chore-acs-bootstrap/ideas/001-FormApp-Android-Gradle-Upgrade.md) で `form_app/android/` を Flutter 3.50.1 テンプレート向けに上げ直し、**本仕様（000）の実装より先に実施する**。
 2. **Flutter の前提パッケージの一部が無い**
    Flutter の手動インストール手順は、Linux の前提として `curl` `git` `unzip` `xz-utils` `zip` `libglu1-mesa` を挙げる。このうち `zip` と GLU に当たるものが、Platform 層にも定義にも無い。影響は確かめていない。扱いは `backlog:494ae8fa-b3eb-44be-a393-fd5c8fb7fffe` で決める。
 3. **Windows の作業コピーで改行が CRLF になる**
@@ -165,9 +166,14 @@ Pin 層では `warmup/10-pub-get.sh` が `form_app` で `flutter pub get` を流
   - Kanban の runner（kanban-demo の `scripts/infra-aws3/agent-vm/runner/run_definition.sh`）を試験モードで動かし、`packages` の計画と、`--write-runtime-env`・`--write-viewer-env` の出力が期待どおりである。
   - このモードは既定の検査に含めない。既定の検査が飛ばすのではなく、別のモードとして明示して呼ぶ。
 
+### 前提（実装の順番）
+
+- **本仕様（000）の実装に入る前に、仕様 001 を完了させる。** [001-FormApp-Android-Gradle-Upgrade.md](prompts/phases/000-foundation/branches/chore-acs-bootstrap/ideas/001-FormApp-Android-Gradle-Upgrade.md) で `form_app/android/` を Flutter 3.50.1 向けに上げ直す。001 が終わっていない状態で 000 だけを入れると、イメージの bake は通っても Viewer の `flutter run` は失敗する見込みのままになる。
+
 ### 対象外
 
-- `form_app` の Android 構成の移行と、Gradle の依存の事前取得（`backlog:9710627d-5ac1-4ac1-b800-9a52889b1df0`）。
+- `form_app` の Android Gradle 上げ直し本体（仕様 001 と `backlog:9710627d-5ac1-4ac1-b800-9a52889b1df0`）。
+- Agent VM の `warmup/` への Gradle 依存の事前取得（001 のあと、必要なら本仕様の追記または正本の更新で扱う）。
 - 前提パッケージ `zip` と GLU の追加。正本の側で決める（`backlog:494ae8fa-b3eb-44be-a393-fd5c8fb7fffe`）。
 - `lane_templates.yaml` のレーンへの ACS のタグ（`acsTags`）の付与（`backlog:07d507dc-651b-41f8-a781-99abde97d2cf`）。
 - ACS のテンプレート（Go 向けの `coding-rules` や `testing-rules` など）を Flutter 向けに直すこと。
@@ -315,7 +321,7 @@ Flutter の版と同梱の Dart の版の対応も、Python の側に表で持�
    7. `lane_templates.yaml` を消すと、`rule=lane-templates` で失敗する。
    8. `builder.timeout_minutes` を 181 にすると、`rule=builder-timeout` で失敗する。
 6. （O1）kanban-demo の checkout を渡して検査を流し、正本とのバイト一致と、runner の試験モードの出力が期待どおりであることを確かめる。
-7. （ユーザーが行う受け入れ）ユーザーの指示で作業ブランチを push し、Kanban でこのブランチを対象にボードを作る。CreateBoard に定義の要約が出る。Repository definition 層は再利用される（`reused=1`）か、bake が成功する。verify のログの最後に `flutter toolchain ok`、warmup のログの最後に `form_app packages cached` が出る。Android Viewer が使える状態になる。Hot Reload と Rebuild は `backlog:9710627d-5ac1-4ac1-b800-9a52889b1df0` が片付くまで失敗する見込みなので、この受け入れには含めない。
+7. （ユーザーが行う受け入れ）仕様 001 が完了したブランチで、ユーザーの指示により push し、Kanban でこのブランチを対象にボードを作る。CreateBoard に定義の要約が出る。Repository definition 層は再利用される（`reused=1`）か、bake が成功する。verify のログの最後に `flutter toolchain ok`、warmup のログの最後に `form_app packages cached` が出る。Android Viewer が使える状態になる。仕様 001 完了後は、Hot Reload と Rebuild も成功する見込みとする（001 の受け入れと合わせて確かめる）。
 
 ## テスト項目 (Testing for the Requirements)
 
