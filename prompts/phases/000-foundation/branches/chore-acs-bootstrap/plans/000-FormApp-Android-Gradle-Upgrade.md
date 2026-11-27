@@ -190,7 +190,7 @@ class MainActivity : FlutterActivity()
 7. **[x] build.sh 組み込み**: `check_form_app_android` を `main` に追加した。
 8. **[x] Verification Plan 実行**: `./scripts/process/build.sh` 成功。
 9. **[x] コミット分割**: 検査+android+build.sh を実装コミットする（ACS 未追跡は含めない）。
-10. **[/] Far-knowledge + push**: 実施中。
+10. **[x] Far-knowledge + push**: 完了。
 
 ## Verification Plan
 
