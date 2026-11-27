@@ -96,15 +96,15 @@ Platform 層（kanban-demo の `scripts/infra-aws3/agent-vm/platform/provision.s
 | その他 | `docker` `amazon-cloudwatch-agent`、agent-runner、tt、起動の台本と systemd の unit、定義の runner と helper、KVM の設定 |
 | 入れられれば入れる | `ffmpeg-free` `android-tools` `sdl2-compat` |
 
-Repository definition 層（本リポジトリの定義）が入れるもの:
+Repository definition 層が入れるもの（ファイルはすべて本リポジトリの `.kotoshiro/kanban/agent-vm/` の下にある）:
 
-| フェーズ | ファイル | 入れるもの |
+| フェーズ | ファイル（`.kotoshiro/kanban/agent-vm/` から） | 入れるもの |
 | :--- | :--- | :--- |
 | packages | `image.yaml` | `unzip` `which` `xz` `tar` `git` `java-17-amazon-corretto-devel`。JDK 17 は Gradle・AGP・sdkmanager が使う。前の 5 つは Platform 層と重なるが、dnf は入れ済みのパッケージには何もしないので害は無い |
-| install | `10-flutter-sdk.sh` | Flutter 3.50.1（revision `ae9b586f…`、tarball の sha256 を照合）を `/opt/toolchains/flutter` に置き、`flutter precache --android` を流す |
-| install | `20-android-sdk.sh` | cmdline-tools（sha1 を照合）を置き、ライセンスに同意し、`platform-tools` `platforms;android-36` `build-tools;36.0.0` `ndk;28.2.13676358` を `/opt/toolchains/android-sdk` に入れる |
-| install | `30-emulator.sh` | Platform の helper（`android-emulator-install`）で `emulator` と `system-images;android-35;google_apis;x86_64` を入れ、AVD `cardbot` を `/var/lib/cardbot/avd` に作る |
-| verify | `10-flutter-doctor.sh` | Flutter の版、`adb`、エミュレータ本体、AVD の設定ファイルを確かめる。`flutter doctor -v` の結果では失敗にしない |
+| install | `install/10-flutter-sdk.sh` | Flutter 3.50.1（revision `ae9b586f…`、tarball の sha256 を照合）を `/opt/toolchains/flutter` に置き、`flutter precache --android` を流す |
+| install | `install/20-android-sdk.sh` | cmdline-tools（sha1 を照合）を置き、ライセンスに同意し、`platform-tools` `platforms;android-36` `build-tools;36.0.0` `ndk;28.2.13676358` を `/opt/toolchains/android-sdk` に入れる |
+| install | `install/30-emulator.sh` | Platform の helper（`android-emulator-install`）で `emulator` と `system-images;android-35;google_apis;x86_64` を入れ、AVD `cardbot` を `/var/lib/cardbot/avd` に作る |
+| verify | `verify/10-flutter-doctor.sh` | Flutter の版、`adb`、エミュレータ本体、AVD の設定ファイルを確かめる。`flutter doctor -v` の結果では失敗にしない |
 
 Pin 層では `warmup/10-pub-get.sh` が `form_app` で `flutter pub get` を流し、`PUB_CACHE` に依存を貯める。`form_app` は `resolution: workspace` なので、この 1 回でルートの workspace の全 37 メンバーの依存が解決される。
 
@@ -175,6 +175,36 @@ Pin 層では `warmup/10-pub-get.sh` が `form_app` で `flutter pub get` を流
 - push と PR。ユーザーが指示したときに行う。
 
 ## 実現方針 (Implementation Approach)
+
+### 配置（どこに何を置くか）
+
+実装後の本リポジトリの配置は次のとおりである。
+
+```text
+（本リポジトリのルート）
+├── .kotoshiro/kanban/                        merge で取り込む。Kanban が読み、ボードのイメージに焼き込む
+│   ├── lane_templates.yaml                   レーンの定義（Pin 層の bake に必須）
+│   └── agent-vm/
+│       ├── image.yaml                        入れる dnf パッケージ、実行時の環境変数、Viewer の設定
+│       ├── install/                          root で実行（Repository definition 層）
+│       │   ├── 10-flutter-sdk.sh             Flutter SDK を入れる
+│       │   ├── 20-android-sdk.sh             Android SDK を入れる
+│       │   └── 30-emulator.sh                エミュレータと AVD を作る
+│       ├── verify/                           agent user で実行（Repository definition 層）
+│       │   └── 10-flutter-doctor.sh          入ったことを確かめる
+│       └── warmup/                           agent user で実行（Pin 層）
+│           └── 10-pub-get.sh                 form_app の依存を取る
+├── scripts/process/                          手元とエージェントの検査だけ。Kanban は読まない
+│   ├── build.sh                              既存。検査を呼ぶ手順を足す
+│   ├── check_kanban_definition.sh            新規。定義の検査の入口
+│   ├── lib/kanban_definition_check.py        新規。image.yaml と pubspec の検査
+│   └── test/check_kanban_definition_test.sh  新規。検査の自己試験
+└── .gitattributes                            既存。*.sh を LF で展開する行を足す
+```
+
+- **インストールするもの（`image.yaml` の `packages`）と、インストールのコマンド（`install/`・`verify/`・`warmup/` の台本）は、すべて `.kotoshiro/kanban/agent-vm/` に置く。** Repository definition 層の bake で Kanban の builder が受け取るのは `agent-vm/` のコピーだけで、install と verify はリポジトリの他の場所を見られない（kanban-demo の `docs/target-repo-agent-vm-image.md` と `scripts/infra-aws3/agent-vm/builder/bake_repo_layer.sh`）。このため、台本を `scripts/` などに置くと bake から見えない。
+- **`scripts/process/` に足すのは、定義が正しいかを確かめる道具だけである。** 何もインストールせず、Kanban もこれを読まない。
+- 正本の置き場所 `scripts/infra-aws3/agent-vm/examples/flutter-samples/` は、kanban-demo（別のリポジトリ）の中の道である。本リポジトリの `scripts/` とは関係ない。
 
 ### 全体の流れ
 
