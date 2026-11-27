@@ -181,16 +181,16 @@ class MainActivity : FlutterActivity()
 
 ## Step-by-Step Implementation Guide
 
-1. **[ ] Red: 自己試験スケルトン**: `scripts/process/test/check_form_app_android_test.sh` と空の `check_form_app_android.sh` / `form_app_android_check.py` を置き、自己試験が「検査がまだ足りない」で失敗することを確認する（または検査未実装で非 0）。
-2. **[ ] Green: Python 検査**: `form_app_android_check.py` に R6 のルールを実装する。
-3. **[ ] Green: 入口シェル**: `check_form_app_android.sh` に O1 分岐を実装する。
-4. **[ ] form_app Kotlin DSL**: `settings.gradle.kts` / `build.gradle.kts` / `app/build.gradle.kts` を新規作成し、`gradle.properties`・wrapper・Manifest・MainActivity・`.gitignore` を更新する。
-5. **[ ] Delete Groovy**: 3 つの `.gradle` を削除する。
-6. **[ ] 自己試験完成**: シナリオ 3 の 5 壊し方を一時コピーで実行するよう書く。正常ケースはリポジトリ実体を `--repo-root` に渡す。
-7. **[ ] build.sh 組み込み**: `check_form_app_android` を `main` に追加する。
-8. **[ ] Verification Plan 実行**: 下記コマンドを実行し、失敗したら修正ループ。
-9. **[ ] コミット分割**: 検査スクリプト → android 構成 → build.sh 連携、の論理単位でコミット（または android+検査をまとめても可。関係ない ACS 未追跡は含めない）。
-10. **[ ] Far-knowledge + push**: record-far-knowledge のあと `git push`。
+1. **[x] Red: 自己試験スケルトン**: 検査と自己試験を先に用意し、構成追加後にグリーン化した。
+2. **[x] Green: Python 検査**: `form_app_android_check.py` に R6 のルールを実装した。
+3. **[x] Green: 入口シェル**: `check_form_app_android.sh` に O1 分岐を実装した。
+4. **[x] form_app Kotlin DSL**: `settings.gradle.kts` / `build.gradle.kts` / `app/build.gradle.kts` を新規作成し、関連ファイルを更新した。
+5. **[x] Delete Groovy**: 3 つの `.gradle` を削除した。
+6. **[x] 自己試験完成**: シナリオ 3 の 5 壊し方を一時コピーで実行する。
+7. **[x] build.sh 組み込み**: `check_form_app_android` を `main` に追加した。
+8. **[x] Verification Plan 実行**: `./scripts/process/build.sh` 成功。
+9. **[x] コミット分割**: 検査+android+build.sh を実装コミットする（ACS 未追跡は含めない）。
+10. **[/] Far-knowledge + push**: 実施中。
 
 ## Verification Plan
 
