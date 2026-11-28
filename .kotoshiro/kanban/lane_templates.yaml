@@ -1,0 +1,13 @@
+version: 1
+templates:
+  general-task:
+    title: General task
+    description: Six-lane general workflow. Lanes have no acsTags, so jobs run the bare harness.
+    lanes:
+      - title: ドラフト
+        allowCardCreate: true
+      - title: 調査
+      - title: 実装中
+      - title: 確認
+      - title: リリース
+      - title: 完了
