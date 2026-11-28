@@ -105,25 +105,22 @@ tip が進んでいた場合は、正本との一致を確かめたうえで期�
 
 ## Step-by-Step Implementation Guide
 
-1. **[ ] Fetch definition tip**:
-    *   Run `git fetch origin cardbot/agent-vm-definition`.
-    *   Record `git rev-parse --short origin/cardbot/agent-vm-definition`.
-    *   If tip is still `5d9d3aa9`, proceed with expected hash `08d135fe…`. If advanced, stop and apply 仕様 000 R2 before merging.
-2. **[ ] Merge (or confirm already merged)**:
-    *   If `git merge-base --is-ancestor origin/cardbot/agent-vm-definition HEAD` succeeds, skip creating a new merge commit and proceed to verification.
-    *   Otherwise run `git merge origin/cardbot/agent-vm-definition` with a merge commit message that states the branch names. Do not stage ACS untracked paths.
-3. **[ ] Confirm seven paths**:
-    *   Run `git ls-tree -r HEAD -- .kotoshiro/kanban` and verify the 7 paths and modes above.
-4. **[ ] Compute definition hash**:
-    *   Run the hash commands in Proposed Changes. Expect `08d135fe…` when tip is `5d9d3aa9`.
-5. **[ ] Confirm form_app Gradle intact**:
-    *   `git show HEAD:form_app/android/settings.gradle.kts` contains AGP `9.3.1`.
-6. **[ ] Confirm definition branch still on remote**:
-    *   `git ls-remote --heads origin cardbot/agent-vm-definition` returns a ref. Do not delete it.
-7. **[ ] Run Verification Plan**:
-    *   Execute Automated Verification below (build.sh + checks).
-8. **[ ] Far-knowledge + push**:
-    *   Run pre-push knowledge check / `record.sh` as required, then `git push` for `chore-acs-bootstrap`.
+1. **[x] Fetch definition tip**:
+    *   `origin/cardbot/agent-vm-definition` tip remains `5d9d3aa9`. Expected hash `08d135fe…` applies.
+2. **[x] Merge (or confirm already merged)**:
+    *   Definition tip is already an ancestor of HEAD (`f676356f` merge commit). No second merge.
+3. **[x] Confirm seven paths**:
+    *   `git ls-tree` shows all 7 paths; install/verify/warmup scripts are `100755`. Blobs match definition tip.
+4. **[x] Compute definition hash**:
+    *   Hash is `08d135fe9c9fb355d2c9028cd65039d072dff675b37de46f60e451a5c82ef82d`.
+5. **[x] Confirm form_app Gradle intact**:
+    *   AGP `9.3.1` remains in `settings.gradle.kts`.
+6. **[x] Confirm definition branch still on remote**:
+    *   `git ls-remote` still lists `refs/heads/cardbot/agent-vm-definition` at `5d9d3aa9`.
+7. **[x] Run Verification Plan**:
+    *   `./scripts/process/build.sh` PASS after self-test seed excludes locked `.gradle` (Windows).
+8. **[x] Far-knowledge + push**:
+    *   Completed in execute-implementation-plan.
 
 ## Verification Plan
 
@@ -199,7 +196,31 @@ git ls-remote --heads origin cardbot/agent-vm-definition
 *   網羅: R1〜R6 と O1。検証シナリオ 1〜7 を Automated Verification に対応付け。
 *   証拠: merge 祖先、`ls-tree` の mode/blob、sha256 1 行、AGP grep、`ls-remote`、`build.sh` PASS。
 *   迂回排除: 手コピー禁止を merge 祖先と blob 一致で担保。1 本化しないことを `ls-remote` で担保。
-*   依存: Windows では `MSYS_NO_PATHCONV=1` を git `rev:path` に付ける。
+*   依存: Windows では `MSYS_NO_PATHCONV=1` を git `rev:path` に付ける。`build.sh` 実行時は MSYS_NO_PATHCONV を付けない（`--repo-root` のパス解決が壊れる）。
+
+### 総合判定結果
+
+**判定**: ✅ 動作確認完了
+
+#### テスト結果サマリ
+- 必須検証コマンド: build.sh / ls-tree / 定義ハッシュ / AGP grep / ls-remote
+- 成功: すべて
+- 失敗: 0
+- 事実上スキップ: form_app `flutter-build`（Flutter 未導入。仕様 001 O1 任意）
+
+#### チェック項目の結果
+| # | チェック項目 | 結果 | 備考 |
+|---|------------|------|------|
+| 1 | スキップされたテスト | ✅ | flutter-build のみ任意スキップ |
+| 2 | 部分的なエラー | ✅ | build.sh PASS。自己試験は `.gradle` 除外後に全 PASS |
+| 3 | 迂回処理による偽成功 | ✅ | merge 祖先 + blob 一致で手コピーでないことを確認 |
+| 4 | アダプタ・コンフィグの誤適用 | ✅ | 対象外（git merge） |
+| 5 | テスト間の依存・順序問題 | ✅ | 各 git 検証は独立 |
+| 6 | カバレッジの妥当性 | ✅ | R1〜R6 / 検証シナリオ 1〜7 をカバー |
+| 7 | 外部システムの状態 | ✅ | origin の定義ブランチ tip `5d9d3aa9` を確認 |
+
+#### 判定理由
+定義 7 ファイルが tip に載り、定義ハッシュと form_app AGP が期待どおりで、定義ブランチはリモートに残っている。`build.sh` は自己試験の seed が Windows の Gradle lock で落ちたため、`.gradle` を除外するよう直したうえで PASS した。
 
 ## Documentation
 

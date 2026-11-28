@@ -25,12 +25,16 @@ trap cleanup EXIT
 
 seed_tree() {
   local dest="$1"
-  mkdir -p "${dest}/form_app/android/app/src/main/kotlin/dev/flutter/formApp/form_app"
-  mkdir -p "${dest}/form_app/android/gradle/wrapper"
+  mkdir -p "${dest}/form_app/android"
   mkdir -p "${dest}/scripts/process/lib"
-  cp -a "${REPO_ROOT}/form_app/android/." "${dest}/form_app/android/"
-  # Drop local gradle cache if copied
-  rm -rf "${dest}/form_app/android/.gradle"
+  # Exclude local Gradle cache/locks: cp -a fails on Windows when *.lock is busy.
+  (
+    cd "${REPO_ROOT}/form_app/android"
+    tar -cf - --exclude='.gradle' --exclude='build' --exclude='local.properties' .
+  ) | (
+    cd "${dest}/form_app/android"
+    tar -xf -
+  )
   cp "${PY}" "${dest}/scripts/process/lib/form_app_android_check.py"
   cp "${CHECK}" "${dest}/scripts/process/check_form_app_android.sh"
 }
