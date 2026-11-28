@@ -1,0 +1,28 @@
+# Agent VM image definition for axsh/flutter-samples (spec 068 R10).
+# Canonical copy; the fork keeps it at .kotoshiro/kanban/agent-vm/ on branch
+# cardbot/agent-vm-definition. See docs/target-repo-agent-vm-image.md.
+version: 1
+board_defaults:
+  backend: ec2
+  instance_type: m8i.2xlarge
+  android_viewer: true
+builder:
+  instance_type: m8i.xlarge
+  root_volume_gib: 100
+  timeout_minutes: 60
+packages:
+  dnf: [unzip, which, xz, tar, git, java-17-amazon-corretto-devel]
+runtime:
+  env:
+    FLUTTER_ROOT: /opt/toolchains/flutter
+    ANDROID_HOME: /opt/toolchains/android-sdk
+    ANDROID_SDK_ROOT: /opt/toolchains/android-sdk
+    JAVA_HOME: /usr/lib/jvm/java-17-amazon-corretto
+    PUB_CACHE: /var/cache/cardbot/agent-vm/pub-cache
+  path_prepend:
+    - /opt/toolchains/flutter/bin
+    - /opt/toolchains/android-sdk/platform-tools
+integrations:
+  android_viewer:
+    avd: cardbot
+    flutter_app_dir: form_app
