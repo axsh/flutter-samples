@@ -92,3 +92,7 @@ yarn.lock
 
 .claude/
 logs/
+work/*
+tmp/
+prompts/phases/*/branches/*/_runs/
+shared/kdb/*/data/
